@@ -24,12 +24,15 @@ if /I "%c%" EQU "N" goto ask
 goto :choice2
 
 :enablekey
+powershell -Command "Get-Service ssh-agent | Set-Service -StartupType Automatic"
+powershell Start-Service ssh-agent
+powershell Get-Service ssh-agent
 ssh-add %ssh_dir%\%filename%
 :ask
 
 :choice
-echo .
-echo .
+echo.
+echo.
 set /P c=Do you want to upload the keys to a linux server [Y/N]? : 
 if /I "%c%" EQU "Y" goto uploadkey
 if /I "%c%" EQU "N" exit
@@ -56,7 +59,7 @@ goto :choice2
 
 
 :send
-cat ~/.ssh/%filename%.pub | ssh %username%@%hostname% -p%port% "mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys && chmod -R go= ~/.ssh && cat >> ~/.ssh/authorized_keys"
+powershell cat ~/.ssh/%filename%.pub | ssh %username%@%hostname% -p%port% "mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys && chmod -R go= ~/.ssh && cat >> ~/.ssh/authorized_keys"
 echo Done!
 pause
 exit
