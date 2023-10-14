@@ -1,6 +1,5 @@
 @echo off
 
-
 title SSH-keygen script 1.0 by HalinalleFin
 echo This script will generate SSH keys, and sends them to a linux server (optional)
 echo.
@@ -14,10 +13,19 @@ goto :choice
 
 
 :generate
-
 set /P filename="Enter file in which to save the key (id_rsa): " || set filename=id_rsa
 set "ssh_dir=%USERPROFILE%\.ssh"
 ssh-keygen -f "%ssh_dir%\%filename%" -N ""
+
+:choice2
+set /P c=Enable the ssh key in windows [Y/N]? : 
+if /I "%c%" EQU "Y" goto enablekey
+if /I "%c%" EQU "N" goto ask
+goto :choice2
+
+:enablekey
+ssh-add %ssh_dir%\%filename%
+:ask
 
 :choice
 echo .
@@ -49,5 +57,6 @@ goto :choice2
 
 :send
 cat ~/.ssh/%filename%.pub | ssh %username%@%hostname% -p%port% "mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys && chmod -R go= ~/.ssh && cat >> ~/.ssh/authorized_keys"
+echo Done!
 pause
 exit
